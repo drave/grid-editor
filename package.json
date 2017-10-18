@@ -18,7 +18,7 @@
     "url": "https://github.com/drave/grid-editor/issues"
   },
   "homepage": "https://github.com/drave/grid-editor#readme",
-  "version": "0.2.6",
+  "version": "0.3.0",
   "main": "dist/jquery.grideditor.js",
   "directories": {
     "example": "example"
@@ -34,10 +34,10 @@
     "wysiwyg"
   ],
   "author": "Simon Epskamp",
-  "contributors" : [
+  "contributors": [
     {
-      "name" : "Rick Verheyen",
-      "email" : "rick@bitfactory.nl"
+      "name": "Rick Verheyen",
+      "email": "rick@bitfactory.nl"
     }
   ],
   "license": "MIT"
