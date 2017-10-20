@@ -66,6 +66,12 @@
     .ge-tools-drawer {
         display: none;
     }
+    .editor-only {
+        display: none;
+    }
+    .save-only {
+        display: none;
+    }
 }
 
 /* While editing */
@@ -159,6 +165,13 @@
         background: fadeout(yellow, 80%);
         visibility: visible !important;
         min-height: 50px;
+    }
+
+    .editor-only {
+        display: block;
+    }
+    .preview-only {
+        display: none;
     }
 }
 

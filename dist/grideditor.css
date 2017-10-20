@@ -47,6 +47,12 @@
 .ge-canvas .ge-tools-drawer {
   display: none;
 }
+.ge-canvas .editor-only {
+  display: none;
+}
+.ge-canvas .save-only {
+  display: none;
+}
 /* While editing */
 .ge-canvas.ge-editing {
   /* Content area */
@@ -128,6 +134,12 @@
   background: rgba(255, 255, 0, 0.2);
   visibility: visible !important;
   min-height: 50px;
+}
+.ge-canvas.ge-editing .editor-only {
+  display: block;
+}
+.ge-canvas.ge-editing .preview-only {
+  display: none;
 }
 /* Layout modes */
 .ge-canvas.ge-layout-phone {

@@ -49,6 +49,8 @@
                 'row_tools': [],
                 'custom_filter': '',
                 'content_types': ['tinymce'],
+                'no_wrap': [],
+                'no_add': [],
                 'valid_col_sizes': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
                 'source_textarea': '',
                 'delete_row': function (grid, row) {
@@ -59,8 +61,8 @@
                     }
                 },
                 'add_column': function (grid, row) {
-                    row.append(createColumn(3));
-                    init();
+                    row.append(grid.createColumn(3));
+                    grid.init();
                 },
                 'add_row': function (grid, col) {
                     var row = grid.createRow();
@@ -283,7 +285,7 @@
                     createTool(drawer, 'Move', 'ge-move', 'glyphicon-move');
 
                     settings.row_tools.forEach(function (t) {
-                        createTool(drawer, t.title || '', t.className || '', t.iconClass || 'glyphicon-wrench', t.on);
+                        createTool(drawer, t.title || '', t.className || '', t.iconClass || 'glyphicon-wrench', t.on, [row]);
                     });
                     createTool(drawer, 'Remove row', '', 'glyphicon-trash', settings.delete_row, [row]);
                     createTool(drawer, 'Add column', 'ge-add-column', 'glyphicon-plus-sign', settings.add_column, [row]);
@@ -331,16 +333,29 @@
 
 
                     settings.col_tools.forEach(function (t) {
-                        createTool(drawer, t.title || '', t.className || '', t.iconClass || 'glyphicon-wrench', t.on);
+                        createTool(drawer, t.title || '', t.className || '', t.iconClass || 'glyphicon-wrench', t.on, t.params || []);
                     });
 
-                    createTool(drawer, 'Remove col', '', 'glyphicon-trash', settings.delete_col, [col]);
-                    createTool(drawer, 'Add row', 'ge-add-row', 'glyphicon-plus-sign', settings.add_row, [col]);
+                    if (settings.delete_col !== false) {
+                        createTool(drawer, 'Remove col', '', 'glyphicon-trash', settings.delete_col, [col]);
+                    }
 
-                    var details = createDetails(col, settings.col_classes).appendTo(drawer);
-                    createTool(drawer, 'Settings', '', 'glyphicon-cog', function (grid) {
-                        details.toggle();
+                    var add_buttons = true;
+                    settings.no_add.forEach(function(na){
+                        if (col.hasClass(na)) {
+                            add_buttons = false;
+                        }
                     });
+                    if (add_buttons) {
+                        if (settings.add_row !== false) {
+                            createTool(drawer, 'Add row', 'ge-add-row', 'glyphicon-plus-sign', settings.add_row, [col]);
+                        }
+
+                        var details = createDetails(col, settings.col_classes).appendTo(drawer);
+                        createTool(drawer, 'Settings', '', 'glyphicon-cog', function (grid) {
+                            details.toggle();
+                        });
+                    }
                 });
             }
 
@@ -358,7 +373,7 @@
                 if (typeof eventHandlers == 'object') {
                     $.each(eventHandlers, function (name, func) {
                         tool.on(name, function () {
-                            eventHandlers.apply(subself, [subself.concat(params)]);
+                            func.apply(subself, [subself].concat(params));
                         });
                     });
                 }
@@ -397,6 +412,20 @@
             function addAllColClasses() {
                 canvas.find('.column, div[class*="col-"]').each(function () {
                     var col = $(this);
+
+                    if (settings.content_types.length > 1) {
+                        var stop = false;
+                        settings.content_types.forEach(function(name, index) {
+                            if (index > 0) {
+                                if (col.closest('[data-ge-content-type]').data('ge-content-type') == name) {
+                                    stop = true;
+                                }
+                            }
+                        });
+                        if (stop) {
+                            return;
+                        }
+                    }
 
                     var size = 2;
                     var sizes = getColSizes(col);
@@ -507,7 +536,7 @@
                             func = window[func];
                         }
 
-                        func(canvas, isInit);
+                        func(canvas, isInit, settings);
                     });
                 }
             }
@@ -519,6 +548,17 @@
                 canvas.find('.column').each(function () {
                     var col = $(this);
                     var contents = $();
+
+                    var stop = false;
+                    settings.no_wrap.forEach(function(name) {
+                        if (col.hasClass(name)) {
+                            stop = true;
+                        }
+                    });
+                    if (stop) {
+                        return;
+                    }
+
                     col.children().each(function () {
                         var child = $(this);
                         if (child.is('.row, .ge-tools-drawer, .ge-content')) {
@@ -592,6 +632,8 @@
             subself.switchLayout = switchLayout;
             subself.getRTE = getRTE;
             subself.clamp = clamp;
+            subself.colClasses = colClasses;
+            subself.settings = settings;
         });
 
         return self;
@@ -807,3 +849,4 @@
         initialContent: '<p>Lorem ipsum dolores</p>',
     };
 })();
+
